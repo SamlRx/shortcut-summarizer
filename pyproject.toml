@@ -17,6 +17,9 @@ mypy = "^1.14.1"
 types-requests = "^2.32.0.20241016"
 pylint = "^3.3.3"
 flake8 = "^7.1.1"
+pre-commit = "^4.1.0"
+black = "^24.10.0"
+flake8-black = "^0.3.6"
 
 [build-system]
 requires = ["poetry-core"]
@@ -30,3 +33,7 @@ secondary = true
 [tool.poetry.plugins.dotenv]
 ignore = "false"
 location = ".env.dev"
+
+[tool.black]
+line-length = 79
+target-version = ["py39"]
