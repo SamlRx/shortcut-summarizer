@@ -1,13 +1,13 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from accessor.shortcut import ShortcutAccessor
+from ports.repository.shortcut import TicketRepository
 
-class TestShortcutAccessor(unittest.TestCase):
+class TestShortcutRestClient(unittest.TestCase):
 
     def setUp(self):
         self.api_key = "test_api_key"
         self.api_url = "https://api.shortcut.com/api/v3"
-        self.accessor = ShortcutAccessor(self.api_key, self.api_url)
+        self.accessor = TicketRepository(self.api_key, self.api_url)
 
     def test_headers(self):
         expected_headers = {"Shortcut-Token": self.api_key}

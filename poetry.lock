@@ -633,6 +633,24 @@ files = [
 ]
 
 [[package]]
+name = "pyfunctional"
+version = "1.5.0"
+description = "Package for creating data pipelines with chain functional programming"
+optional = false
+python-versions = ">=3.8.0,<4.0.0"
+files = [
+    {file = "pyfunctional-1.5.0-py3-none-any.whl", hash = "sha256:dfee0f4110f4167801bb12f8d497230793392f694655103b794460daefbebf2b"},
+    {file = "pyfunctional-1.5.0.tar.gz", hash = "sha256:e184f3d7167e5822b227c95292c3557cf59edf258b1f06a08c8e82991de98769"},
+]
+
+[package.dependencies]
+dill = ">=0.2.5"
+tabulate = "<=1.0.0"
+
+[package.extras]
+all = ["pandas (>=1.0.3)"]
+
+[[package]]
 name = "pylint"
 version = "3.3.3"
 description = "python code static checker"
@@ -742,6 +760,20 @@ mpmath = ">=1.1.0,<1.4"
 dev = ["hypothesis (>=6.70.0)", "pytest (>=7.1.0)"]
 
 [[package]]
+name = "tabulate"
+version = "0.9.0"
+description = "Pretty-print tabular data"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "tabulate-0.9.0-py3-none-any.whl", hash = "sha256:024ca478df22e9340661486f85298cff5f6dcdba14f3813e8830015b9ed1948f"},
+    {file = "tabulate-0.9.0.tar.gz", hash = "sha256:0095b12bf5966de529c0feb1fa08671671b3368eec77d7ef7ab114be2c068b3c"},
+]
+
+[package.extras]
+widechars = ["wcwidth"]
+
+[[package]]
 name = "tomlkit"
 version = "0.13.2"
 description = "Style preserving TOML library"
@@ -829,4 +861,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "d2002b47278c3d69dae7d5e40118c3b407cb3dedd5a679e3b018c1c313dcb750"
+content-hash = "e109f41d759673f8103cb309faa311211a8a8a1164d1c1e03596a3c813dc636f"

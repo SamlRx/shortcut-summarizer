@@ -16,6 +16,13 @@ This project is a Python-based local AI agent designed to:
 
 ## Prerequisites
 
+### 0. **Python**
+This project requires Python 3.8 or higher. You can download Python from the [official website](https://www.python.org/downloads/).
+Poetry is used for dependency management. You can install it using pip:
+```bash
+pip install poetry
+```
+
 ### 1. **API Keys**
 Obtain the following API tokens:
 - Shortcut API token: [Generate Shortcut API Token](https://app.shortcut.com/settings/api-tokens)
@@ -42,7 +49,10 @@ NOTION_DATABASE_ID=<your-database-id>
 
 ---
 ## Build
-
+Install poetry and dependencies:
+```bash
+poetry install
+```
 
 ---
 ## Known Limitations
@@ -50,7 +60,8 @@ NOTION_DATABASE_ID=<your-database-id>
 ---
 
 ## Future Improvements
-
+- Create a Dockerfile for easy deployment.
+- Create a make file for easy setup and deployment.
 ---
 
 ## License
