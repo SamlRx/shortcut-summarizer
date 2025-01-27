@@ -18,7 +18,7 @@ class FetchTicket(InitStep):
         self._report_repository = report_repository
 
     def __call__(self) -> Iterator[Ticket]:
-        yield from self._ticket_repository.fetch_data_from_project_since(
+        yield from self._ticket_repository.fetch_tickets_from_project_since(
                     self._project_name,
                     self._report_repository.get_last_entry_date(),
                 )

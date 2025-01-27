@@ -796,24 +796,6 @@ files = [
 ]
 
 [[package]]
-name = "pyfunctional"
-version = "1.5.0"
-description = "Package for creating data pipelines with chain functional programming"
-optional = false
-python-versions = ">=3.8.0,<4.0.0"
-files = [
-    {file = "pyfunctional-1.5.0-py3-none-any.whl", hash = "sha256:dfee0f4110f4167801bb12f8d497230793392f694655103b794460daefbebf2b"},
-    {file = "pyfunctional-1.5.0.tar.gz", hash = "sha256:e184f3d7167e5822b227c95292c3557cf59edf258b1f06a08c8e82991de98769"},
-]
-
-[package.dependencies]
-dill = ">=0.2.5"
-tabulate = "<=1.0.0"
-
-[package.extras]
-all = ["pandas (>=1.0.3)"]
-
-[[package]]
 name = "pylint"
 version = "3.3.3"
 description = "python code static checker"
@@ -982,6 +964,17 @@ test = ["build[virtualenv] (>=1.0.3)", "filelock (>=3.4.0)", "ini2toml[lite] (>=
 type = ["importlib_metadata (>=7.0.2)", "jaraco.develop (>=7.21)", "mypy (==1.14.*)", "pytest-mypy"]
 
 [[package]]
+name = "streamable"
+version = "1.4.7"
+description = "Pythonic Stream-like manipulation of iterables"
+optional = false
+python-versions = "*"
+files = [
+    {file = "streamable-1.4.7-py3-none-any.whl", hash = "sha256:706911e775990fc08d14a772c920afb2bcc68caef719f354fb2cb95f2407034b"},
+    {file = "streamable-1.4.7.tar.gz", hash = "sha256:dc458faaed6dfc59b8a6c58ec93467501547a3d89a1ba2bcad56fcc4ff55875d"},
+]
+
+[[package]]
 name = "sympy"
 version = "1.13.1"
 description = "Computer algebra system (CAS) in Python"
@@ -997,20 +990,6 @@ mpmath = ">=1.1.0,<1.4"
 
 [package.extras]
 dev = ["hypothesis (>=6.70.0)", "pytest (>=7.1.0)"]
-
-[[package]]
-name = "tabulate"
-version = "0.9.0"
-description = "Pretty-print tabular data"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "tabulate-0.9.0-py3-none-any.whl", hash = "sha256:024ca478df22e9340661486f85298cff5f6dcdba14f3813e8830015b9ed1948f"},
-    {file = "tabulate-0.9.0.tar.gz", hash = "sha256:0095b12bf5966de529c0feb1fa08671671b3368eec77d7ef7ab114be2c068b3c"},
-]
-
-[package.extras]
-widechars = ["wcwidth"]
 
 [[package]]
 name = "tomlkit"
@@ -1120,4 +1099,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "e4ec45e29a0c9e06c98505f89745ae9896ba2a8700a5d4d1f81b7383aafe7e93"
+content-hash = "c9e2281949cfb0303c723ce6d0c321f3a290dad2ee547e3564e8577b09febf08"

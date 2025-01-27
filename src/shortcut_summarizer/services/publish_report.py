@@ -1,7 +1,7 @@
 from typing import List, Iterable
 
 
-from functional import seq
+from streamable import Stream
 
 from shortcut_summarizer.domains.report import TicketReport
 from shortcut_summarizer.ports.report import ReportPort
@@ -14,6 +14,6 @@ class PublishTicketReports(SinkStep):
 
     def __call__(self, data: Iterable[TicketReport]) -> None:
         (
-            seq(data)
+            Stream(data)
             .map(self._report_repository.save_report)
          )

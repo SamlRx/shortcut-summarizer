@@ -7,7 +7,7 @@ from shortcut_summarizer.domains.ticket import Ticket
 
 class TicketPort(ABC):
     @abstractmethod
-    def fetch_data_from_project_since(
+    def fetch_tickets_from_project_since(
         self, project_name: str, since: datetime
     ) -> Iterator[Ticket]:
         pass
