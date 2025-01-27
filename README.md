@@ -40,9 +40,6 @@ SHORTCUT_API_KEY=<your-shortcut-api-key>
 # Notion API token
 NOTION_API_KEY=<your-notion-api-key>
 
-# Optional: OpenAI API key (if using OpenAI for summarization)
-OPENAI_API_KEY=<your-openai-api-key>
-
 # Notion database ID for storing ticket data
 NOTION_DATABASE_ID=<your-database-id>
 ```
