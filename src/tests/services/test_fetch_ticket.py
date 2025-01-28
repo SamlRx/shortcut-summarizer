@@ -12,12 +12,16 @@ from shortcut_summarizer.services.fetch_ticket import FetchTicket
 def mock_ticket_port() -> MagicMock:
     return create_autospec(TicketPort)
 
+
 @pytest.fixture
 def mock_report_port() -> MagicMock:
     return create_autospec(ReportPort)
 
+
 @pytest.fixture
-def fetch_ticket(mock_ticket_port: MagicMock, mock_report_port: MagicMock) -> FetchTicket:
+def fetch_ticket(
+    mock_ticket_port: MagicMock, mock_report_port: MagicMock
+) -> FetchTicket:
     project_name = "test_project"
     return FetchTicket(
         project_name=project_name,
@@ -25,7 +29,10 @@ def fetch_ticket(mock_ticket_port: MagicMock, mock_report_port: MagicMock) -> Fe
         report_repository=mock_report_port,
     )
 
-def test_team_id_cached_property(fetch_ticket: FetchTicket, mock_ticket_port: MagicMock) -> None:
+
+def test_team_id_cached_property(
+    fetch_ticket: FetchTicket, mock_ticket_port: MagicMock
+) -> None:
     # GIVEN
     mock_ticket_port.get_team_id.return_value = "team_123"
 
@@ -34,9 +41,16 @@ def test_team_id_cached_property(fetch_ticket: FetchTicket, mock_ticket_port: Ma
 
     # THEN
     assert team_id == "team_123"
-    mock_ticket_port.get_team_id.assert_called_once_with(fetch_ticket._project_name)
+    mock_ticket_port.get_team_id.assert_called_once_with(
+        fetch_ticket._project_name
+    )
 
-def test_fetch_tickets(fetch_ticket: FetchTicket, mock_ticket_port: MagicMock, mock_report_port: MagicMock) -> None:
+
+def test_fetch_tickets(
+    fetch_ticket: FetchTicket,
+    mock_ticket_port: MagicMock,
+    mock_report_port: MagicMock,
+) -> None:
     # GIVEN
     mock_ticket_port.get_team_id.return_value = "team_123"
     mock_report_port.get_last_entry_date.return_value = "2023-01-01"
@@ -45,20 +59,29 @@ def test_fetch_tickets(fetch_ticket: FetchTicket, mock_ticket_port: MagicMock, m
         MagicMock(spec=Ticket),
         MagicMock(spec=Ticket),
     ]
-    mock_ticket_port.fetch_tickets_from_project_since.return_value = iter(tickets)
+    mock_ticket_port.fetch_tickets_from_project_since.return_value = iter(
+        tickets
+    )
 
     # WHEN
     result = list(fetch_ticket())
 
     # THEN
     assert result == tickets
-    mock_ticket_port.get_team_id.assert_called_once_with(fetch_ticket._project_name)
+    mock_ticket_port.get_team_id.assert_called_once_with(
+        fetch_ticket._project_name
+    )
     mock_report_port.get_last_entry_date.assert_called_once()
     mock_ticket_port.fetch_tickets_from_project_since.assert_called_once_with(
         "team_123", "2023-01-01"
     )
 
-def test_fetch_tickets_no_tickets(fetch_ticket: FetchTicket, mock_ticket_port: MagicMock, mock_report_port: MagicMock) -> None:
+
+def test_fetch_tickets_no_tickets(
+    fetch_ticket: FetchTicket,
+    mock_ticket_port: MagicMock,
+    mock_report_port: MagicMock,
+) -> None:
     # Arrange
     mock_ticket_port.get_team_id.return_value = "team_123"
     mock_report_port.get_last_entry_date.return_value = "2023-01-01"
@@ -70,7 +93,9 @@ def test_fetch_tickets_no_tickets(fetch_ticket: FetchTicket, mock_ticket_port: M
 
     # Assert
     assert result == []
-    mock_ticket_port.get_team_id.assert_called_once_with(fetch_ticket._project_name)
+    mock_ticket_port.get_team_id.assert_called_once_with(
+        fetch_ticket._project_name
+    )
     mock_report_port.get_last_entry_date.assert_called_once()
     mock_ticket_port.fetch_tickets_from_project_since.assert_called_once_with(
         "team_123", "2023-01-01"

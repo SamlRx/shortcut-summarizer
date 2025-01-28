@@ -3,10 +3,12 @@ from unittest.mock import MagicMock, call
 from datetime import datetime
 from shortcut_summarizer.ports.repository.shortcut import TicketRepository
 
+
 @pytest.fixture
 def mock_requests_get() -> MagicMock:
     """Fixture to mock the requests.get function."""
     return MagicMock()
+
 
 @pytest.fixture
 def ticket_repository(mock_requests_get: MagicMock) -> TicketRepository:
@@ -17,7 +19,10 @@ def ticket_repository(mock_requests_get: MagicMock) -> TicketRepository:
         get=mock_requests_get,
     )
 
-def test_get_team_id(ticket_repository: TicketRepository, mock_requests_get: MagicMock) -> None:
+
+def test_get_team_id(
+    ticket_repository: TicketRepository, mock_requests_get: MagicMock
+) -> None:
     # Given: A mocked response for the "groups" endpoint containing multiple teams
     mock_response = MagicMock()
     mock_response.json.return_value = [
@@ -33,7 +38,10 @@ def test_get_team_id(ticket_repository: TicketRepository, mock_requests_get: Mag
     assert team_id == "team-id-2"
     mock_requests_get.assert_called_once_with("groups")
 
-def test_fetch_tickets_from_project_since(ticket_repository: TicketRepository, mock_requests_get: MagicMock) -> None:
+
+def test_fetch_tickets_from_project_since(
+    ticket_repository: TicketRepository, mock_requests_get: MagicMock
+) -> None:
     # Given: A mocked response for tickets updated since a specific date for a team
     team_id = "team-id-1"
     since = datetime(2025, 1, 1)
@@ -41,30 +49,55 @@ def test_fetch_tickets_from_project_since(ticket_repository: TicketRepository, m
     mock_response_1 = MagicMock()
     mock_response_1.status_code = 200
     mock_response_1.json.return_value = {
-        "data": [{"id": "ticket-id-1", "name": "Ticket One",
-                  "created_at": "2025-01-02T00:00:00Z", "updated_at": "2025-01-02T00:00:00Z",
-                  "description": "This is a ticket description"}],
-
+        "data": [
+            {
+                "id": "ticket-id-1",
+                "name": "Ticket One",
+                "created_at": "2025-01-02T00:00:00Z",
+                "updated_at": "2025-01-02T00:00:00Z",
+                "description": "This is a ticket description",
+            }
+        ],
         "next": None,
     }
 
     mock_response_2 = MagicMock()
     mock_response_2.status_code = 200
     mock_response_2.json.return_value = {
-        "data": [{"id": "comment-1", "text": "foo bar baz", "author": "DarK Vador", "created_at": "2025-01-03T00:00:00Z"}],
-        "next": 'foo',
+        "data": [
+            {
+                "id": "comment-1",
+                "text": "foo bar baz",
+                "author": "DarK Vador",
+                "created_at": "2025-01-03T00:00:00Z",
+            }
+        ],
+        "next": "foo",
     }
     mock_response_3 = MagicMock()
     mock_response_3.status_code = 200
     mock_response_3.json.return_value = {
-        "data": [{"id": "comment-2", "text": "platypus", "author": "Not so Dark Vador", "created_at": "2025-01-04T00:00:00Z"}],
+        "data": [
+            {
+                "id": "comment-2",
+                "text": "platypus",
+                "author": "Not so Dark Vador",
+                "created_at": "2025-01-04T00:00:00Z",
+            }
+        ],
         "next": None,
     }
 
-    mock_requests_get.side_effect = [mock_response_1, mock_response_2, mock_response_3]
+    mock_requests_get.side_effect = [
+        mock_response_1,
+        mock_response_2,
+        mock_response_3,
+    ]
 
     # When: The fetch_tickets_from_project_since method is called with the team ID and date
-    tickets = list(ticket_repository.fetch_tickets_from_project_since(team_id, since))
+    tickets = list(
+        ticket_repository.fetch_tickets_from_project_since(team_id, since)
+    )
 
     # Then: The returned tickets match the mocked response, and the API is called
     assert len(tickets) == 1
@@ -81,6 +114,21 @@ def test_fetch_tickets_from_project_since(ticket_repository: TicketRepository, m
 
     assert mock_requests_get.call_count == 3
 
-    assert mock_requests_get.call_args_list[0] == call('https://api.shortcut.com/api/v3/search/stories', headers={'Shortcut-Token': 'fake-api-key'}, params={'query': 'team:team-id-1 updated-after:2025-01-01 00:00:00', 'page_size': 100})
-    assert mock_requests_get.call_args_list[1] == call('https://api.shortcut.com/api/v3/stories/ticket-id-1/comments', headers={'Shortcut-Token': 'fake-api-key'}, params={'page_size': 100})
-    assert mock_requests_get.call_args_list[2] == call('https://api.shortcut.com/api/v3/stories/ticket-id-1/comments', headers={'Shortcut-Token': 'fake-api-key'}, params={'page_size': 100, 'next': 'foo'})
+    assert mock_requests_get.call_args_list[0] == call(
+        "https://api.shortcut.com/api/v3/search/stories",
+        headers={"Shortcut-Token": "fake-api-key"},
+        params={
+            "query": "team:team-id-1 updated-after:2025-01-01 00:00:00",
+            "page_size": 100,
+        },
+    )
+    assert mock_requests_get.call_args_list[1] == call(
+        "https://api.shortcut.com/api/v3/stories/ticket-id-1/comments",
+        headers={"Shortcut-Token": "fake-api-key"},
+        params={"page_size": 100},
+    )
+    assert mock_requests_get.call_args_list[2] == call(
+        "https://api.shortcut.com/api/v3/stories/ticket-id-1/comments",
+        headers={"Shortcut-Token": "fake-api-key"},
+        params={"page_size": 100, "next": "foo"},
+    )
