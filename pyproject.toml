@@ -12,6 +12,8 @@ pydantic = "^2.10.6"
 requests = "^2.32.3"
 python-dotenv = "^1.0.1"
 streamable = "^1.4.7"
+pytest = "^8.3.4"
+notion-client = "^2.3.0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.14.1"
@@ -21,6 +23,7 @@ flake8 = "^7.1.1"
 pre-commit = "^4.1.0"
 black = "^24.10.0"
 flake8-black = "^0.3.6"
+pytest = "^8.3.4"
 
 [build-system]
 requires = ["poetry-core"]

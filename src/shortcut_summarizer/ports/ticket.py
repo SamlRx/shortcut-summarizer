@@ -11,3 +11,7 @@ class TicketPort(ABC):
         self, project_name: str, since: datetime
     ) -> Iterator[Ticket]:
         pass
+
+    @abstractmethod
+    def get_team_id(self, team_name: str) -> str:
+        pass
