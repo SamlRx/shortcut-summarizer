@@ -1,14 +1,13 @@
 import logging
 from datetime import datetime
-from typing import Callable, Iterator, Dict, Optional, Iterable, List
+from typing import Callable, Dict, Iterator, List, Optional
 
 import requests
-
-from shortcut_summarizer.domains.ticket import Ticket, Comment
-from shortcut_summarizer.ports.ticket import TicketPort
 from streamable import Stream
 
-from shortcut_summarizer.utils import extract_str, extract_datetime
+from shortcut_summarizer.domains.ticket import Comment, Ticket
+from shortcut_summarizer.ports.ticket import TicketPort
+from shortcut_summarizer.utils import extract_datetime, extract_str
 
 _LOGGER = logging.getLogger(__name__)
 _PAGE_SIZE = 100

@@ -1,18 +1,18 @@
-import pytest
-from unittest.mock import MagicMock, call
 from datetime import datetime
-from shortcut_summarizer.ports.repository.shortcut import TicketRepository
+from unittest.mock import MagicMock, call
+
+import pytest
+
+from shortcut_summarizer.repository.shortcut import TicketRepository
 
 
 @pytest.fixture
 def mock_requests_get() -> MagicMock:
-    """Fixture to mock the requests.get function."""
     return MagicMock()
 
 
 @pytest.fixture
 def ticket_repository(mock_requests_get: MagicMock) -> TicketRepository:
-    """Fixture to create a TicketRepository instance with mocked requests.get."""
     return TicketRepository(
         api_key="fake-api-key",
         api_url="https://api.shortcut.com/api/v3",
@@ -23,7 +23,8 @@ def ticket_repository(mock_requests_get: MagicMock) -> TicketRepository:
 def test_get_team_id(
     ticket_repository: TicketRepository, mock_requests_get: MagicMock
 ) -> None:
-    # Given: A mocked response for the "groups" endpoint containing multiple teams
+    # Given: A mocked response for the "groups" endpoint containing multiple
+    # teams
     mock_response = MagicMock()
     mock_response.json.return_value = [
         {"id": "team-id-1", "name": "Team One"},
@@ -42,7 +43,8 @@ def test_get_team_id(
 def test_fetch_tickets_from_project_since(
     ticket_repository: TicketRepository, mock_requests_get: MagicMock
 ) -> None:
-    # Given: A mocked response for tickets updated since a specific date for a team
+    # Given: A mocked response for tickets updated since a specific date for
+    # a team
     team_id = "team-id-1"
     since = datetime(2025, 1, 1)
 
@@ -94,12 +96,14 @@ def test_fetch_tickets_from_project_since(
         mock_response_3,
     ]
 
-    # When: The fetch_tickets_from_project_since method is called with the team ID and date
+    # When: The fetch_tickets_from_project_since method is called with the
+    # team ID and date
     tickets = list(
         ticket_repository.fetch_tickets_from_project_since(team_id, since)
     )
 
-    # Then: The returned tickets match the mocked response, and the API is called
+    # Then: The returned tickets match the mocked response, and the API
+    # is called
     assert len(tickets) == 1
     assert tickets[0].id == "ticket-id-1"
     assert tickets[0].name == "Ticket One"
