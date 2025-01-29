@@ -34,7 +34,7 @@ repos:
     hooks:
       - id: generate-coverage-report
         name: Generate HTML coverage report
-        entry: poetry run coverage html -d .coverage_html
+        entry: poetry run coverage html -d reports/htmlcov
         always_run: true
         language: system
         pass_filenames: false
