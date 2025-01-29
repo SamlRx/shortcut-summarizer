@@ -1,6 +1,20 @@
 from datetime import datetime
+from enum import Enum
 
 from pydantic import BaseModel
+
+
+class Domain(str, Enum):
+    MATCHING = "matching"
+    DATA_PULL = "data_pull"
+    SEARCH = "search"
+    REPORTS = "reports"
+
+
+class IssueType(str, Enum):
+    BUG = "bug"
+    FEATURE = "feature"
+    IMPROVEMENT = "improvement"
 
 
 class TicketReport(BaseModel):
@@ -10,5 +24,5 @@ class TicketReport(BaseModel):
     actor: str
     summary: str
     solution: str
-    issue: str
-    part_of_the_code: str
+    issue_type: IssueType
+    domain: Domain

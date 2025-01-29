@@ -22,3 +22,20 @@ repos:
     rev: v5.10.1
     hooks:
       - id: isort
+  - repo: local
+    hooks:
+      - id: coverage
+        name: Generate coverage report
+        entry: poetry run coverage run -m pytest
+        language: system
+        pass_filenames: false
+        require_serial: true
+  - repo: local
+    hooks:
+      - id: generate-coverage-report
+        name: Generate HTML coverage report
+        entry: poetry run coverage html -d .coverage_html
+        always_run: true
+        language: system
+        pass_filenames: false
+        require_serial: true

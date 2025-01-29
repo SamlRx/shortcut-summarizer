@@ -33,6 +33,7 @@ pre-commit = "^4.1.0"
 black = "^24.10.0"
 flake8-black = "^0.3.6"
 pytest = "^8.3.4"
+coverage = "^7.6.10"
 
 [build-system]
 requires = ["poetry-core"]
