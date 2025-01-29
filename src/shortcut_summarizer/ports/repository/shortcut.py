@@ -20,16 +20,14 @@ class TicketRepository(TicketPort):
         api_key: str,
         api_url: str,
         get: Callable = requests.get,
-        extract_str: Callable = extract_str,
-        extract_datetime: Callable = extract_datetime,
-        extract_int: Callable = int,
+        local_extract_str: Callable = extract_str,
+        local_extract_datetime: Callable = extract_datetime,
     ) -> None:
         self._api_key = api_key
         self._api_url = api_url
         self._get = get
-        self._extract_str = extract_str
-        self._extract_datetime = extract_datetime
-        self._extract_int = extract_int
+        self._extract_str = local_extract_str
+        self._extract_datetime = local_extract_datetime
 
     def get_team_id(self, team_name: str) -> str:
         return list(
