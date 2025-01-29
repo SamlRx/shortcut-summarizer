@@ -171,5 +171,4 @@ cython_debug/
 .pypirc
 
 # Coverage
-.coverage
-reports/
+.coverage_report
