@@ -5,7 +5,7 @@ from streamable import Stream
 
 from shortcut_summarizer.domains.report import TicketReport
 from shortcut_summarizer.ports.report import ReportPort
-from shortcut_summarizer.services.models import SinkStep
+from shortcut_summarizer.services._models import SinkStep
 
 
 class PublishTicketReports(SinkStep):

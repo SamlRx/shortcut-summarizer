@@ -5,7 +5,7 @@ from typing import Iterator
 from shortcut_summarizer.domains.ticket import Ticket
 from shortcut_summarizer.ports.report import ReportPort
 from shortcut_summarizer.ports.ticket import TicketPort
-from shortcut_summarizer.services.models import InitStep
+from shortcut_summarizer.services._models import InitStep
 
 
 class FetchTicket(InitStep):
