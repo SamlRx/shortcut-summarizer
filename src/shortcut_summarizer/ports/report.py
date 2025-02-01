@@ -1,13 +1,21 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-from shortcut_summarizer.domains.report import TicketReport
+from pydantic import BaseModel
 
 
 class ReportPort(ABC):
 
     @abstractmethod
-    def save_report(self, report: TicketReport) -> None:
+    def init_repository(
+        self, database_name: str, table_name: str, model: BaseModel.__class__
+    ) -> bool:
+        pass
+
+    @abstractmethod
+    def save_entry(
+        self, database_name: str, table_name: str, data: BaseModel
+    ) -> None:
         pass
 
     @abstractmethod
