@@ -3,7 +3,7 @@ from typing import List, Iterator, Iterable
 from shortcut_summarizer.domains.report import TicketReport
 from shortcut_summarizer.domains.ticket import Ticket
 from shortcut_summarizer.ports.summarizer import SummarizerPort
-from shortcut_summarizer.services.models import Step
+from shortcut_summarizer.services._models import Step
 from streamable import Stream
 
 
