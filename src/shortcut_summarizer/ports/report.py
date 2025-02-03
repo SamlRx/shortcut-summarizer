@@ -7,7 +7,7 @@ from pydantic import BaseModel
 class ReportPort(ABC):
 
     @abstractmethod
-    def init_repository(
+    def init_table(
         self, database_name: str, table_name: str, model: BaseModel.__class__
     ) -> bool:
         pass

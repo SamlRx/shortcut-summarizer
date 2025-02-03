@@ -14,6 +14,11 @@ _PAGE_SIZE = 100
 
 
 class TicketRepository(TicketPort):
+
+    @staticmethod
+    def build(api_key: str, api_url: str) -> "TicketRepository":
+        return TicketRepository(api_key, api_url)
+
     def __init__(
         self,
         api_key: str,
