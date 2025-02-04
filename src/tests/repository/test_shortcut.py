@@ -58,6 +58,7 @@ def test_fetch_tickets_from_project_since(
                 "created_at": "2025-01-02T00:00:00Z",
                 "updated_at": "2025-01-02T00:00:00Z",
                 "description": "This is a ticket description",
+                "url": "https://shortcut.com/ticket-id-1",
             }
         ],
         "next": None,

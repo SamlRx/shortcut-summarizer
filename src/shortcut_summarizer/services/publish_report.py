@@ -1,5 +1,4 @@
-from typing import List, Iterable
-
+from typing import Iterable
 
 from streamable import Stream
 
@@ -13,4 +12,4 @@ class PublishTicketReports(SinkStep):
         self._report_repository = report_repository
 
     def __call__(self, data: Iterable[TicketReport]) -> None:
-        (Stream(data).map(self._report_repository.save_report))
+        (Stream(data).map(self._report_repository))

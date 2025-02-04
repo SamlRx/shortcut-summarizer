@@ -14,6 +14,7 @@ class Comment(BaseModel):
 class Ticket(BaseModel):
     id: str
     name: str
+    url: str
     created_at: datetime
     updated_at: datetime
     description: str

@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import MagicMock, create_autospec
+
+import pytest
 
 from shortcut_summarizer.domains.ticket import Ticket
 from shortcut_summarizer.ports.report import ReportPort

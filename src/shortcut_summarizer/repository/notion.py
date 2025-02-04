@@ -1,10 +1,9 @@
 import logging
 from datetime import datetime
 from enum import Enum
-from typing import Dict, Any, Type
-from typing import Optional
+from typing import Any, Dict, Optional, Type
 
-from notion_client import Client, APIResponseError
+from notion_client import Client
 from pydantic import BaseModel
 
 from shortcut_summarizer.ports.report import ReportPort
@@ -13,33 +12,43 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class NotionSchemaConverter:
-    notion_types = {
-        str: {"type": "rich_text"},
-        int: {"type": "number"},
-        float: {"type": "number"},
-        datetime: {"type": "date"},
-        Enum: {"type": "select"},
+    notion_types: Dict = {
+        str: {"rich_text": {}},
+        int: {"number": {}},
+        float: {"number": {}},
+        datetime: {"date": {}},
     }
 
     def to_notion_schema(self, model: Type[BaseModel]) -> Dict[str, Any]:
         properties: Dict[str, Any] = {}
 
-        for field_name, field in model.__annotations__.items():
-            if issubclass(field, Enum):
-                options = [
-                    {"name": option.value, "color": "default"}
-                    for option in field
-                ]
-                properties[field_name] = {
-                    "type": "select",
-                    "select": {"options": options},
-                }
-            elif field in self.notion_types:
-                properties[field_name] = self.notion_types[field]
-            else:
-                properties[field_name] = {"type": "rich_text"}
+        fields = list(model.__annotations__.items())
+
+        if not fields:
+            return properties
+
+        first_field_name, first_field = fields[0]
+        properties[first_field_name] = {"title": {}}
+
+        for field_name, field in fields[1:]:
+            properties[field_name] = self._convert_field(field)
 
         return properties
+
+    def _convert_field(self, field: Type) -> Dict[str, Any]:
+        if issubclass(field, Enum):
+            options = [
+                {"name": option.value, "color": "default"} for option in field
+            ]
+            return {
+                "type": "select",
+                "select": {"options": options},
+            }
+        elif field in self.notion_types:
+            return self.notion_types[field]
+
+        _LOGGER.warning(f"Unsupported field type: {field}")
+        return {"rich_text": {}}
 
 
 class NotionRepository(ReportPort):
@@ -48,57 +57,66 @@ class NotionRepository(ReportPort):
     def build(api_key: str) -> "NotionRepository":
         return NotionRepository(Client(auth=api_key))
 
-    def __init__(self, client: Client, schema_converter: NotionSchemaConverter = NotionSchemaConverter()) -> None:
+    def __init__(
+        self,
+        client: Client,
+        schema_converter: NotionSchemaConverter = NotionSchemaConverter(),
+    ) -> None:
         self._client = client
         self._schema_converter = schema_converter
 
-    def _exist_table(
-            self, parent_page_id: str, table_name: str
-    ) -> bool:
-        results = (self._client.search(query=table_name,
-                                       filter={"property": "object", "value": "database"})
-                    .get('results'))
+    def _exist_table(self, table_name: str) -> bool:
+        results = self._client.search(
+            query=table_name,
+            filter={"property": "object", "value": "database"},
+        ).get("results")
         if not results:
             return False
         return True
 
     def init_table(
-            self, database_name: str, table_name: str, model: BaseModel.__class__
+        self, database_name: str, table_name: str, model: BaseModel.__class__
     ) -> bool:
         parent_page_id = self._get_parent_page_id(database_name)
         if not parent_page_id:
+            _LOGGER.error(f"Parent page '{database_name}' not found.")
             return False
 
-        if self._exist_table(parent_page_id, table_name):
-            _LOGGER.info(f"Table '{table_name}' already exists.")
+        if self._exist_table(parent_page_id):
+            _LOGGER.debug(f"Table '{table_name}' already exists.")
             return True
 
-        return self._create_table(model, parent_page_id, table_name)
+        return bool(self._create_table(model, parent_page_id, table_name))
 
-    def _create_table(self, model, parent_page_id, table_name):
+    def _create_table(
+        self, model: BaseModel.__class__, parent_page_id: str, table_name: str
+    ) -> bool:
         database = {
             "parent": {"type": "page_id", "page_id": parent_page_id},
-            "title": [{"type": "text", "text": {"content": table_name}}],
+            "title": [
+                {"type": "text", "text": {"content": table_name, "link": None}}
+            ],
             "properties": self._schema_converter.to_notion_schema(model),
         }
+        _LOGGER.info(f"Creating table '{table_name}'...")
         return bool(self._client.databases.create(**database))
 
     def _create_parent_page(self, database_name: str) -> None:
         self._client.pages.create(
             parent={"type": "workspace"},
-            properties={"title": [{"type": "text", "text": {"content": database_name}}]},
+            properties={
+                "title": [{"type": "text", "text": {"content": database_name}}]
+            },
         )
 
     def _get_parent_page_id(self, database_name: str) -> Optional[str]:
-        if page_id := (
-                self._client.search(
-                    query=database_name,
-                    filter={"property": "object", "value": "page"})
-                        .get('results')
-                [0]
-                        .get("id")
+        if results := (
+            self._client.search(
+                query=database_name,
+                filter={"property": "object", "value": "page"},
+            ).get("results")
         ):
-            return page_id
+            return results[0]["id"]
 
         _LOGGER.info(f"Database '{database_name}' not found.")
         return None
@@ -107,6 +125,6 @@ class NotionRepository(ReportPort):
         return datetime.now()
 
     def save_entry(
-            self, database_name: str, table_name: str, data: BaseModel
+        self, database_name: str, table_name: str, data: BaseModel
     ) -> None:
         pass

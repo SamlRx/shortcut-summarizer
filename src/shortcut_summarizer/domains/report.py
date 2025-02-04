@@ -13,12 +13,13 @@ class Domain(str, Enum):
 
 class IssueType(str, Enum):
     BUG = "bug"
-    FEATURE = "feature"
-    IMPROVEMENT = "improvement"
+    EVOLUTION = "evolution"
+    USER = "user"
 
 
 class TicketReport(BaseModel):
     id: str
+    name: str
     created_at: datetime
     updated_at: datetime
     actor: str

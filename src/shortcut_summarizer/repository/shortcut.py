@@ -142,6 +142,7 @@ class TicketRepository(TicketPort):
         return Ticket(
             id=self._extract_str(payload, "id"),
             name=self._extract_str(payload, "name"),
+            url=self._extract_str(payload, "url"),
             created_at=self._extract_datetime(payload, "created_at"),
             updated_at=self._extract_datetime(payload, "updated_at"),
             description=self._extract_str(payload, "description"),
