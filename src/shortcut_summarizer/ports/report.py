@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -19,5 +20,7 @@ class ReportPort(ABC):
         pass
 
     @abstractmethod
-    def get_last_entry_date(self) -> datetime:
+    def get_last_entry_date(
+        self, database_name: str, table_name: str, model: BaseModel.__class__
+    ) -> Optional[datetime]:
         pass

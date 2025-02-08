@@ -27,17 +27,17 @@ def notion_repository(mock_notion_client: MagicMock) -> NotionRepository:
     return NotionRepository(mock_notion_client)
 
 
-class TestEnum(Enum):
+class MockEnum(Enum):
     OPTION_A = "Option A"
     OPTION_B = "Option B"
 
 
-class TestModel(BaseModel):
+class MockModel(BaseModel):
     name: str
     age: int
     height: float
     birthday: datetime
-    category: TestEnum
+    category: MockEnum
 
 
 def test_schema_conversion() -> None:
@@ -59,7 +59,7 @@ def test_schema_conversion() -> None:
     }
 
     # When converting the model to a Notion schema
-    schema = NotionSchemaConverter().to_notion_schema(TestModel)
+    schema = NotionSchemaConverter().to_notion_schema(MockModel)
 
     # Then the generated schema should match the expected structure
     assert schema == expected_schema
@@ -104,8 +104,45 @@ def test_init_table_creates_new_table(
     ]
 
     # When initializing the table
-    result = notion_repository.init_table("database", "table", TestModel)
+    result = notion_repository.init_table("database", "table", MockModel)
 
     # Then it should create a new table and return True
     assert result is True
     mock_notion_client.databases.create.assert_called_once()
+
+
+def test_save_entry(
+    notion_repository: NotionRepository, mock_notion_client: MagicMock
+) -> None:
+    # Given a NotionRepository instance
+    mock_notion_client.search.return_value = {
+        "results": [{"id": "parent_page_123"}]
+    }
+    test_model = MockModel(
+        name="John Doe",
+        age=30,
+        height=1.75,
+        birthday=datetime(1990, 1, 1),
+        category=MockEnum.OPTION_A,
+    )
+
+    # When saving an entry
+    notion_repository.save_entry("database", "table", test_model)
+
+    # Then it should save the entry to the table
+    assert mock_notion_client.pages.create.call_count == 1
+    assert mock_notion_client.pages.create.call_args.kwargs["properties"] == {
+        "age": {"number": {"content": 30}},
+        "birthday": {"date": {"content": datetime(1990, 1, 1, 0, 0)}},
+        "category": {
+            "select": {
+                "options": [
+                    {"color": "default", "name": "Option A"},
+                    {"color": "default", "name": "Option B"},
+                ]
+            },
+            "type": "select",
+        },
+        "height": {"number": {"content": 1.75}},
+        "name": {"title": "John Doe"},
+    }

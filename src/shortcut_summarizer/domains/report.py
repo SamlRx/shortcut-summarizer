@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel
+from shortcut_summarizer.domains.common import BaseModelWithUpdatedAt
 
 
 class Domain(str, Enum):
@@ -17,13 +17,12 @@ class IssueType(str, Enum):
     USER = "user"
 
 
-class TicketReport(BaseModel):
+class TicketReport(BaseModelWithUpdatedAt):
     id: str
     name: str
-    created_at: datetime
-    updated_at: datetime
     actor: str
     summary: str
     solution: str
     issue_type: IssueType
     domain: Domain
+    created_at: datetime

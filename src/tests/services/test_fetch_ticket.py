@@ -23,11 +23,12 @@ def mock_report_port() -> MagicMock:
 def fetch_ticket(
     mock_ticket_port: MagicMock, mock_report_port: MagicMock
 ) -> FetchTicket:
-    project_name = "test_project"
     return FetchTicket(
-        project_name=project_name,
+        ticket_project_name="test_project",
+        database_name="test_database",
         ticket_repository=mock_ticket_port,
         report_repository=mock_report_port,
+        report_model=Ticket,
     )
 
 
@@ -43,7 +44,7 @@ def test_team_id_cached_property(
     # THEN
     assert team_id == "team_123"
     mock_ticket_port.get_team_id.assert_called_once_with(
-        fetch_ticket._project_name
+        fetch_ticket._ticket_project_name
     )
 
 
@@ -70,7 +71,7 @@ def test_fetch_tickets(
     # THEN
     assert result == tickets
     mock_ticket_port.get_team_id.assert_called_once_with(
-        fetch_ticket._project_name
+        fetch_ticket._ticket_project_name
     )
     mock_report_port.get_last_entry_date.assert_called_once()
     mock_ticket_port.fetch_tickets_from_project_since.assert_called_once_with(
@@ -95,7 +96,7 @@ def test_fetch_tickets_no_tickets(
     # Assert
     assert result == []
     mock_ticket_port.get_team_id.assert_called_once_with(
-        fetch_ticket._project_name
+        fetch_ticket._ticket_project_name
     )
     mock_report_port.get_last_entry_date.assert_called_once()
     mock_ticket_port.fetch_tickets_from_project_since.assert_called_once_with(
