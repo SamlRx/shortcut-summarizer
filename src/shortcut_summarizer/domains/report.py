@@ -1,10 +1,10 @@
 from datetime import datetime
 from enum import Enum
 
-from shortcut_summarizer.domains.common import BaseModelWithUpdatedAt
+from pydantic import BaseModel
 
 
-class TicketReport(BaseModelWithUpdatedAt):
+class TicketReport(BaseModel):
     class IssueType(str, Enum):
         BUG = "bug"
         EVOLUTION = "evolution"
@@ -24,3 +24,4 @@ class TicketReport(BaseModelWithUpdatedAt):
     issue_type: IssueType
     domain: Domain
     created_at: datetime
+    updated_at: datetime

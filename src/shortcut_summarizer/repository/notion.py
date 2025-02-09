@@ -6,7 +6,6 @@ from typing import Any, Dict, Optional, Type
 from notion_client import Client
 from pydantic import BaseModel
 
-from shortcut_summarizer.domains.common import BaseModelWithUpdatedAt
 from shortcut_summarizer.ports.report import ReportPort
 
 _LOGGER = logging.getLogger(__name__)
@@ -144,7 +143,7 @@ class NotionRepository(ReportPort):
         self,
         database_name: str,
         table_name: str,
-        model: Type[BaseModelWithUpdatedAt],
+        model: Type[BaseModel],
     ) -> bool:
         parent_page_id = self._get_parent_page_id(database_name)
         if not parent_page_id:
@@ -161,7 +160,7 @@ class NotionRepository(ReportPort):
         self,
         parent_page_id: str,
         table_name: str,
-        model: Type[BaseModelWithUpdatedAt],
+        model: Type[BaseModel],
     ) -> bool:
         database = {
             "parent": {"type": "page_id", "page_id": parent_page_id},
@@ -197,7 +196,7 @@ class NotionRepository(ReportPort):
         self,
         database_name: str,
         table_name: str,
-        model: Type[BaseModelWithUpdatedAt],
+        model: Type[BaseModel],
     ) -> Optional[datetime]:
         updated_at_field = "updated_at"
         table = self._get_table(table_name)
@@ -236,7 +235,7 @@ class NotionRepository(ReportPort):
         return datetime.fromisoformat(notion_date)
 
     def save_entry(
-        self, database_name: str, table_name: str, data: BaseModelWithUpdatedAt
+        self, database_name: str, table_name: str, data: BaseModel
     ) -> None:
         parent_page_id = self._get_parent_page_id(database_name)
         if not parent_page_id:
