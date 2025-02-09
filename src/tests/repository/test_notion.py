@@ -68,11 +68,11 @@ def test_schema_conversion() -> None:
 def test_schema_value_conversion() -> None:
     # Given a Pydantic model with various field types
     expected_payload: Dict = {
-        "name": {"title": [{"text": {"content": "John Doe"}}]},
         "age": {"number": [{"content": 30}]},
-        "height": {"number": [{"content": 1.75}]},
-        "birthday": {"date": [{"content": "1990-01-01T00:00:00"}]},
+        "birthday": {"date": {"start": "1990-01-01T00:00:00"}},
         "category": {"select": {"name": "Option A"}},
+        "height": {"number": [{"content": 1.75}]},
+        "name": {"title": [{"text": {"content": "John Doe"}}]},
     }
     mock_model = MockModel(
         name="John Doe",
@@ -157,7 +157,7 @@ def test_save_entry(
     assert mock_notion_client.pages.create.call_count == 1
     assert mock_notion_client.pages.create.call_args.kwargs["properties"] == {
         "age": {"number": [{"content": 30}]},
-        "birthday": {"date": [{"content": "1990-01-01T00:00:00"}]},
+        "birthday": {"date": {"start": "1990-01-01T00:00:00"}},
         "category": {"select": {"name": "Option A"}},
         "height": {"number": [{"content": 1.75}]},
         "name": {"title": [{"text": {"content": "John Doe"}}]},

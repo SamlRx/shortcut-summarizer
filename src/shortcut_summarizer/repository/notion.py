@@ -87,7 +87,7 @@ class NotionSchemaConverter:
             case NotionSchemaConverter.NotionType.RICH_TEXT:
                 return {
                     NotionSchemaConverter.NotionType.RICH_TEXT.value: [
-                        {"content": value}
+                        {"text": {"content": value}}
                     ]
                 }
             case NotionSchemaConverter.NotionType.NUMBER:
@@ -98,9 +98,9 @@ class NotionSchemaConverter:
                 }
             case NotionSchemaConverter.NotionType.DATE:
                 return {
-                    NotionSchemaConverter.NotionType.DATE.value: [
-                        {"content": value.isoformat()}
-                    ]
+                    NotionSchemaConverter.NotionType.DATE.value: {
+                        "start": value.isoformat()
+                    }
                 }
             case _:
                 if issubclass(field, Enum):
