@@ -65,6 +65,30 @@ def test_schema_conversion() -> None:
     assert schema == expected_schema
 
 
+def test_schema_value_conversion() -> None:
+    # Given a Pydantic model with various field types
+    expected_payload: Dict = {
+        "name": {"title": [{"text": {"content": "John Doe"}}]},
+        "age": {"number": [{"content": 30}]},
+        "height": {"number": [{"content": 1.75}]},
+        "birthday": {"date": [{"content": "1990-01-01T00:00:00"}]},
+        "category": {"select": {"name": "Option A"}},
+    }
+    mock_model = MockModel(
+        name="John Doe",
+        age=30,
+        height=1.75,
+        birthday=datetime(1990, 1, 1),
+        category=MockEnum.OPTION_A,
+    )
+
+    # When converting the model to a Notion schema
+    entry = NotionSchemaConverter().to_notion_entry(mock_model)
+
+    # Then the generated schema should match the expected structure
+    assert entry == expected_payload
+
+
 def test_init_table_table_exists(
     notion_repository: NotionRepository, mock_notion_client: MagicMock
 ) -> None:
@@ -85,7 +109,7 @@ def test_init_table_table_exists(
                 filter={"property": "object", "value": "page"},
             ),
             call(
-                query="parent_page_123",
+                query="table",
                 filter={"property": "object", "value": "database"},
             ),
         ]
@@ -132,17 +156,9 @@ def test_save_entry(
     # Then it should save the entry to the table
     assert mock_notion_client.pages.create.call_count == 1
     assert mock_notion_client.pages.create.call_args.kwargs["properties"] == {
-        "age": {"number": {"content": 30}},
-        "birthday": {"date": {"content": datetime(1990, 1, 1, 0, 0)}},
-        "category": {
-            "select": {
-                "options": [
-                    {"color": "default", "name": "Option A"},
-                    {"color": "default", "name": "Option B"},
-                ]
-            },
-            "type": "select",
-        },
-        "height": {"number": {"content": 1.75}},
-        "name": {"title": "John Doe"},
+        "age": {"number": [{"content": 30}]},
+        "birthday": {"date": [{"content": "1990-01-01T00:00:00"}]},
+        "category": {"select": {"name": "Option A"}},
+        "height": {"number": [{"content": 1.75}]},
+        "name": {"title": [{"text": {"content": "John Doe"}}]},
     }

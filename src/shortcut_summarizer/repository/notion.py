@@ -13,11 +13,17 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class NotionSchemaConverter:
-    notion_types: Dict[Type, str] = {
-        str: "rich_text",
-        int: "number",
-        float: "number",
-        datetime: "date",
+    class NotionType(Enum):
+        RICH_TEXT = "rich_text"
+        NUMBER = "number"
+        DATE = "date"
+        SELECT = "select"
+
+    _types_to_notion_types: Dict[Type, NotionType] = {
+        str: NotionType.RICH_TEXT,
+        int: NotionType.NUMBER,
+        float: NotionType.NUMBER,
+        datetime: NotionType.DATE,
     }
 
     def to_notion_entry(self, data: BaseModel) -> Dict[str, Any]:
@@ -38,41 +44,77 @@ class NotionSchemaConverter:
             return properties
 
         # Handle the first field as a "title"
-        first_field_name, _ = fields[0]
+        first_field_name, first_field = fields[0]
+        value = getattr(data, first_field_name) if data else None
         properties[first_field_name] = {
-            "title": (
-                self._extract_title(data, first_field_name) if data else {}
-            )
+            "title": [{"text": {"content": value}}] if value else {}
         }
 
         # Process the remaining fields
         for field_name, field in fields[1:]:
             value = getattr(data, field_name) if data else None
-            properties[field_name] = self._convert_field(field, value)
+            properties[field_name] = (
+                self._field_value(field, value)
+                if value
+                else self._field_schema(field)
+            )
 
         return properties
 
-    @staticmethod
-    def _extract_title(
-        data: Optional[BaseModel], first_field_name: str
-    ) -> Dict[str, Any]:
-        return getattr(data, first_field_name)
+    def _field_schema(self, field: Type) -> Dict[str, Any]:
+        match self._types_to_notion_types.get(field):
+            case NotionSchemaConverter.NotionType.RICH_TEXT:
+                return {NotionSchemaConverter.NotionType.RICH_TEXT.value: {}}
+            case NotionSchemaConverter.NotionType.NUMBER:
+                return {NotionSchemaConverter.NotionType.NUMBER.value: {}}
+            case NotionSchemaConverter.NotionType.DATE:
+                return {NotionSchemaConverter.NotionType.DATE.value: {}}
+            case _:
+                if issubclass(field, Enum):  # ✅ Check if it's an Enum
+                    options = [
+                        {"name": option.value, "color": "default"}
+                        for option in field
+                    ]
+                    return {
+                        "type": NotionSchemaConverter.NotionType.SELECT.value,
+                        "select": {"options": options},
+                    }
+                _LOGGER.error(f"Unsupported field type: {field}")
+                return {NotionSchemaConverter.NotionType.RICH_TEXT.value: {}}
 
-    def _convert_field(
-        self, field: Type, value: Optional[Any]
-    ) -> Dict[str, Any]:
-        """Convert a single field type to Notion format."""
-        if issubclass(field, Enum):
-            options = [
-                {"name": option.value, "color": "default"} for option in field
-            ]
-            return {"type": "select", "select": {"options": options}}
-        elif field in self.notion_types:
-            field_type = self.notion_types[field]
-            return {field_type: {} if value is None else {"content": value}}
-
-        _LOGGER.warning(f"Unsupported field type: {field}")
-        return {"rich_text": value or {}}
+    def _field_value(self, field: Type, value: Any) -> Any:
+        match self._types_to_notion_types.get(field):
+            case NotionSchemaConverter.NotionType.RICH_TEXT:
+                return {
+                    NotionSchemaConverter.NotionType.RICH_TEXT.value: [
+                        {"content": value}
+                    ]
+                }
+            case NotionSchemaConverter.NotionType.NUMBER:
+                return {
+                    NotionSchemaConverter.NotionType.NUMBER.value: [
+                        {"content": value}
+                    ]
+                }
+            case NotionSchemaConverter.NotionType.DATE:
+                return {
+                    NotionSchemaConverter.NotionType.DATE.value: [
+                        {"content": value.isoformat()}
+                    ]
+                }
+            case _:
+                if issubclass(field, Enum):
+                    return {
+                        NotionSchemaConverter.NotionType.SELECT.value: {
+                            "name": value.value
+                        }
+                    }
+                _LOGGER.error(f"Unsupported field type: {field}")
+                return {
+                    NotionSchemaConverter.NotionType.RICH_TEXT.value: [
+                        {"content": value}
+                    ]
+                }
 
 
 class NotionRepository(ReportPort):
@@ -109,7 +151,7 @@ class NotionRepository(ReportPort):
             _LOGGER.error(f"Parent page '{database_name}' not found.")
             return False
 
-        if self._get_table(parent_page_id):
+        if self._get_table(table_name):
             _LOGGER.debug(f"Table '{table_name}' already exists.")
             return True
 
