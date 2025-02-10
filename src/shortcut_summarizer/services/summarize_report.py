@@ -13,4 +13,4 @@ class SummarizeTicket(Step):
         self._summarizer = summarizer
 
     def __call__(self, data: Iterable[Ticket]) -> Iterator[TicketReport]:
-        yield from Stream(data).map(self._summarizer.summarize_tickets)
+        yield from Stream(data).map(self._summarizer.summarize)

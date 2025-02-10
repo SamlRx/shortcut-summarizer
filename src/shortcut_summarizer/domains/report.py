@@ -23,5 +23,7 @@ class TicketReport(BaseModel):
     solution: str
     issue_type: IssueType
     domain: Domain
+    ticket_url: str
+    ticket_created_at: datetime
+    ticket_updated_at: datetime
     created_at: datetime
-    updated_at: datetime
