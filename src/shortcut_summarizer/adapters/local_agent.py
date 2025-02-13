@@ -1,4 +1,3 @@
-from datetime import datetime
 from functools import cached_property
 from typing import Optional
 
@@ -45,33 +44,14 @@ class LocalAgent(SummarizerPort):
         self._model_not_evaluated.eval()
         return self._model_not_evaluated
 
-    def summarize(self, ticket: Ticket) -> TicketReport:
-        start_date = datetime.now()
-
-        return TicketReport(
-            id=ticket.id,
-            name=ticket.name,
-            actor=ticket.comments[0].author,
-            domain=self._classify_domain(ticket),
-            ticket_url=ticket.url,
-            ticket_created_at=ticket.created_at,
-            ticket_updated_at=ticket.updated_at,
-            summary=self._summarize_ticket(ticket),
-            solution=self._extract_solution(ticket),
-            issue_type=self._classify_issue_type(ticket),
-            created_at=start_date,
-        )
-
-    def _summarize_ticket(self, ticket: Ticket) -> str:
+    def summarize_ticket(self, ticket: Ticket) -> str:
         question = "What is the issue described here"
         result = self._qa_pipeline(
             question=question, context=ticket.description
         )
         return self._summarize(result["answer"], 50)
 
-    def _classify_domain(
-        self, ticket: Ticket
-    ) -> Optional[TicketReport.Domain]:
+    def classify_domain(self, ticket: Ticket) -> Optional[TicketReport.Domain]:
         candidate_labels = [domain.value for domain in TicketReport.Domain]
         result = self._classifier(
             self._extract_ticket_text(ticket), candidate_labels
@@ -85,7 +65,7 @@ class LocalAgent(SummarizerPort):
             print(f"Warning: Unexpected domain label: {predicted_label}")
             return None
 
-    def _classify_issue_type(
+    def classify_issue_type(
         self, ticket: Ticket
     ) -> Optional[TicketReport.IssueType]:
         candidate_labels = [domain.value for domain in TicketReport.IssueType]
@@ -119,7 +99,7 @@ class LocalAgent(SummarizerPort):
             f"created at: {comment.created_at}]"
         )
 
-    def _extract_solution(self, ticket: Ticket) -> str:
+    def extract_solution(self, ticket: Ticket) -> str:
         context = self._extract_ticket_text(ticket)
         question = (
             "What is the solution to the problem described in the ticket?"
